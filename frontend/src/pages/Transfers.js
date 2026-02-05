@@ -62,6 +62,12 @@ export default function Transfers() {
 
   const fromAccount = accounts.find((a) => a.id === parseInt(fromAccountId))
 
+  const accountLabel = (account) => {
+    const name = [account.first_name, account.last_name].filter(Boolean).join(' ')
+    const holder = name ? ` (${name})` : ''
+    return `${account.currency}${holder} — ${account.currency} ${parseFloat(account.balance).toFixed(2)}`
+  }
+
   if (loading) {
     return <div className="text-center py-8">Loading...</div>
   }
@@ -107,7 +113,7 @@ export default function Transfers() {
               <option value="">Select account</option>
               {accounts.map((account) => (
                 <option key={account.id} value={account.id}>
-                  {account.currency} - Balance: {account.currency} {parseFloat(account.balance).toFixed(2)}
+                  {accountLabel(account)}
                 </option>
               ))}
             </select>
@@ -134,7 +140,7 @@ export default function Transfers() {
                 .filter((account) => account.id !== parseInt(fromAccountId))
                 .map((account) => (
                   <option key={account.id} value={account.id}>
-                    {account.currency} - Balance: {account.currency} {parseFloat(account.balance).toFixed(2)}
+                    {accountLabel(account)}
                   </option>
                 ))}
             </select>

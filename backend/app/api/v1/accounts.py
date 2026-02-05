@@ -35,6 +35,8 @@ def create_account(
         user_agent=request.headers.get("user-agent"),
         request_id=getattr(request.state, "request_id", None),
         details={
+            "first_name": account.first_name,
+            "last_name": account.last_name,
             "currency": account.currency,
             "initial_balance": float(account.balance),
         },
