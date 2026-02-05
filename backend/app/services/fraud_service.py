@@ -88,18 +88,26 @@ class FraudService:
         if not account_ids:
             return {"allowed": True}
 
-        # Raw SQL with IN (expanding list to separate params to avoid driver/array binding 9h9h)
+        # Use enum value from pg_enum (existing DB enum), no string CAST
         stmt = text("""
-            SELECT COALESCE(SUM(amount), 0) AS total
-            FROM transactions
-            WHERE from_account_id IN :account_ids
-              AND status = CAST(:status AS public.transactionstatus)
-              AND created_at >= :today_start
-              AND is_deleted = false
+            SELECT COALESCE(SUM(t.amount), 0) AS total
+            FROM transactions t
+            CROSS JOIN (
+                SELECT (e.enumlabel)::public.transactionstatus AS completed_status
+                FROM pg_enum e
+                JOIN pg_type ty ON e.enumtypid = ty.oid
+                JOIN pg_namespace n ON ty.typnamespace = n.oid
+                WHERE n.nspname = 'public' AND ty.typname = 'transactionstatus'
+                  AND lower(e.enumlabel) = 'completed'
+                LIMIT 1
+            ) st
+            WHERE t.from_account_id IN :account_ids
+              AND t.status = st.completed_status
+              AND t.created_at >= :today_start
+              AND t.is_deleted = false
         """).bindparams(bindparam("account_ids", expanding=True))
         r = db.execute(stmt, {
             "account_ids": account_ids,
-            "status": "completed",  # DB enum is lowercase
             "today_start": today_start,
         })
         row = r.fetchone()
