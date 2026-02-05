@@ -74,6 +74,8 @@ CREATE INDEX IF NOT EXISTS ix_users_id ON users (id);
 CREATE TABLE IF NOT EXISTS accounts (
   id         SERIAL PRIMARY KEY,
   user_id    INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  first_name VARCHAR(100) NOT NULL DEFAULT '',
+  last_name  VARCHAR(100) NOT NULL DEFAULT '',
   currency   VARCHAR(3) NOT NULL,
   balance    NUMERIC(20, 2) NOT NULL DEFAULT 0,
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,

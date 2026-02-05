@@ -20,6 +20,8 @@ class Account(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    first_name = Column(String(100), nullable=False, default="")
+    last_name = Column(String(100), nullable=False, default="")
     currency = Column(String(3), nullable=False, index=True)  # ISO 4217
     balance = Column(Numeric(20, 2), nullable=False, default=Decimal("0.00"))
     is_deleted = Column(Boolean, nullable=False, default=False, index=True)

@@ -47,6 +47,8 @@ class AccountService:
         # Create account (multiple accounts per currency per user are allowed)
         account = Account(
             user_id=user_id,
+            first_name=account_data.first_name or "",
+            last_name=account_data.last_name or "",
             currency=account_data.currency.upper(),
             balance=account_data.initial_balance or Decimal("0.00")
         )
